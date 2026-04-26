@@ -1,0 +1,18 @@
+# normalize vcf file using bcftools 
+bcftools norm -f /home/wangjj3/Final_Project/refdata_hg19_chr21/fasta/genome.fa -m -both merged.vcf > norm_merged.vcf
+# filter variant type into a separate file
+bcftools view --type snps norm_merged.vcf  > snps.vcf
+bcftools view --type indels -i 'abs(strlen(ALT)-strlen(REF))<50' norm_merged.vcf > small_indels.vcf
+bcftools view --type indels -i 'abs(strlen(ALT)-strlen(REF))>=50' norm_merged.vcf > SVs.vcf
+# check for # of each variant type in hp1, hp2, and both (homozygous)
+	# all hp1
+bcftools filter -i 'GT[0]="1/1"' snps.vcf | grep -v "^#" | wc -l
+# all hp2
+bcftools filter -i 'GT[1]="1/1"' snps.vcf | grep -v "^#" | wc -l
+# both hp1 and hp2
+bcftools filter -i 'GT[0]="1/1" && GT[1]="1/1"' snps.vcf | grep -v "^#" | wc -l
+# hp1 only
+bcftools filter -i 'GT[0]="1/1" && (GT[1]="./." || GT[1]="0/0")' snps.vcf | grep -v "^#" | wc -l
+# hp2 only
+bcftools filter -i '(GT[0]="./." || GT[0]="0/0") && GT[1]="1/1"' snps.vcf | grep -v "^#" | wc -l
+# [repeat for small_indels.vcf and SVs.vcf]
