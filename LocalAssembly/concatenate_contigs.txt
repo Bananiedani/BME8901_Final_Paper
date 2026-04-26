@@ -1,0 +1,4 @@
+# from folder with hp1 SPAdes output folder:
+cat */contigs.fasta > spades_contigs_hp1.fasta
+# from folder with hp2 SPAdes output folder:
+cat */contigs.fasta > spades_contigs_hp2.fasta
